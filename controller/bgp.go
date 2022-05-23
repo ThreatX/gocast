@@ -150,6 +150,7 @@ func (c *Controller) Announce(route *Route) error {
 		if p.Conf.NeighborAddress == c.peerIP.String() {
 			found = true
 		}
+    return
 	})
 	if err != nil {
 		return err
