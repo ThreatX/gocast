@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-  "github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 	"github.com/mayuresh82/gocast/config"
 )
@@ -111,8 +110,6 @@ func (c *ConsulMon) queryServices() ([]*App, error) {
 			continue
 		}
 
-	  fmt.Println("ConsulData: ")
-    spew.Dump(nats)
 		app, err := NewApp(service.Service, vip, vipConf, monitors, nats, "consul")
 		if err != nil {
 			glog.Errorf("Unable to add consul app: %v", err)

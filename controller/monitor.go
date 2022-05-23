@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+  "github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 	c "github.com/mayuresh82/gocast/config"
 	api "github.com/osrg/gobgp/api"
@@ -246,6 +247,9 @@ func (m *MonitorMgr) checkCond(am *appMon) error {
 	app := am.app
 	m.clMu.Lock()
 	defer m.clMu.Unlock()
+
+  fmt.Println("App: ")
+  spew.Dump(app)
 	if m.runMonitors(app) {
 		glog.V(2).Infof("All Monitors for app: %s succeeded", app.Name)
 		if !am.announced {
