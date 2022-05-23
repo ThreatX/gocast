@@ -126,6 +126,7 @@ func (m *MonitorMgr) consulMon() {
 			var toRemove []string
 			m.monMu.Lock()
 			for name, mon := range m.monitors {
+        fmt.Println("Mon: ", mon)
 				if mon.app.Source != "consul" {
 					continue
 				}

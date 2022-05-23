@@ -17,11 +17,15 @@ type AgentConfig struct {
 	ConsulQueryInterval time.Duration `yaml:"consul_query_interval"`
 }
 
+type PeerConfig struct {
+  PeerIP      string   `yaml:"peer_ip"`
+  PeerAS      uint32    `yaml:"peer_as"`
+}
+
 type BgpConfig struct {
-	LocalAS     int    `yaml:"local_as"`
-	PeerAS      int    `yaml:"peer_as"`
+	LocalAS     uint32    `yaml:"local_as"`
 	LocalIP     string `yaml:"local_ip"`
-	PeerIP      string `yaml:"peer_ip"`
+	Peers       []PeerConfig
 	Communities []string
 	Origin      string
 }

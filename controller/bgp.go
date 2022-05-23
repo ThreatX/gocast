@@ -32,15 +32,6 @@ func NewController(config c.BgpConfig) (*Controller, error) {
 	c := &Controller{}
 	var gw net.IP
 	var err error
-	if config.PeerIP == "" {
-		gw, err := gateway()
-		if err != nil {
-			return nil, fmt.Errorf("Unable to get gw ip: %v", err)
-		}
-		c.peerIP = gw
-	} else {
-		c.peerIP = net.ParseIP(config.PeerIP)
-	}
 	if config.LocalIP == "" {
 		gw, err = via(c.peerIP)
 		if err != nil {
@@ -74,11 +65,25 @@ func NewController(config c.BgpConfig) (*Controller, error) {
 		return nil, fmt.Errorf("Unable to start bgp: %v", err)
 	}
 	c.s = s
-	c.peerAS = config.PeerAS
-	// set mh by default for all ebgp peers
-	if c.peerAS != config.LocalAS {
-		c.multiHop = true
-	}
+  for _, peer := range config.Peers {
+    fmt.Print("Peer: ", peer)
+    p := &api.Peer{
+  		Conf: &api.PeerConf{
+  			NeighborAddress: peer.PeerIP,
+  			PeerAs:         peer.PeerAS,
+  		},
+  		RouteServer: &api.RouteServer{
+  			RouteServerClient: true,
+  		},
+  	}
+    if err := s.AddPeer(context.Background(), &api.AddPeerRequest{Peer: p}); err != nil {
+      return nil, fmt.Errorf("Unable to start bgp: %v", err)
+    }
+    if peer.PeerAS != config.LocalAS {
+    	c.multiHop = true
+    }
+  }
+
 	return c, nil
 }
 
