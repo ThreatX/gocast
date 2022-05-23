@@ -156,7 +156,7 @@ func (c *Controller) Announce(route *Route) error {
 			return err
 		}
 	}
-	path, err = c.s.AddPath(context.Background(), &api.AddPathRequest{Path: c.getApiPath(route)})
+	path, err := c.s.AddPath(context.Background(), &api.AddPathRequest{Path: c.getApiPath(route)})
   fmt.Println("Path: ")
   spew.Dump(path)
 	return err
