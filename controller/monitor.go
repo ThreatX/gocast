@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-  "github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 	c "github.com/mayuresh82/gocast/config"
 	api "github.com/osrg/gobgp/api"
@@ -201,20 +200,20 @@ func (m *MonitorMgr) Remove(appName string) {
 		if err := deleteLoopback(a.app.Vip.Net); err != nil {
 			glog.Errorf("Failed to remove app: %s: %v", a.app.Name, err)
 		}
-    net_ip := m.ctrl.localIP;
+    nat_ip := m.ctrl.localIP;
     if len(a.app.PrivateIp) > 0 {
-      net_ip = net.ParseIP(a.app.PrivateIp)
+      nat_ip = net.ParseIP(a.app.PrivateIp)
     }
 
 		for _, nat := range a.app.Nats {
 			parts := strings.Split(nat, ":")
 			switch len(parts) {
 			case 3:
-				if err := natRule("D", a.app.Vip.Net.IP, net_ip, parts[0], parts[1], parts[2]); err != nil {
+				if err := natRule("D", a.app.Vip.Net.IP, nat_ip, parts[0], parts[1], parts[2]); err != nil {
 					glog.Errorf("Failed to remove app: %s: %v", a.app.Name, err)
 				}
 			case 2:
-				if err := natRule("D", a.app.Vip.Net.IP, net_ip, parts[0], parts[1], parts[1]); err != nil {
+				if err := natRule("D", a.app.Vip.Net.IP, nat_ip, parts[0], parts[1], parts[1]); err != nil {
 					glog.Errorf("Failed to remove app: %s: %v", a.app.Name, err)
 				}
 			default:
@@ -253,23 +252,26 @@ func (m *MonitorMgr) checkCond(am *appMon) error {
 	m.clMu.Lock()
 	defer m.clMu.Unlock()
 
-  fmt.Println("App: ")
-  spew.Dump(app)
 	if m.runMonitors(app) {
 		glog.V(2).Infof("All Monitors for app: %s succeeded", app.Name)
 		if !am.announced {
 			if err := addLoopback(app.Name, app.Vip.Net); err != nil {
 				return err
 			}
+      nat_ip := m.ctrl.localIP;
+      if len(app.PrivateIp) > 0 {
+        nat_ip = net.ParseIP(app.PrivateIp)
+      }
+
 			for _, nat := range app.Nats {
 				parts := strings.Split(nat, ":")
 				switch len(parts) {
 				case 3:
-					if err := natRule("A", app.Vip.Net.IP, m.ctrl.localIP, parts[0], parts[1], parts[2]); err != nil {
+					if err := natRule("A", app.Vip.Net.IP, nat_ip, parts[0], parts[1], parts[2]); err != nil {
 						return err
 					}
 				case 2:
-					if err := natRule("A", app.Vip.Net.IP, m.ctrl.localIP, parts[0], parts[1], parts[1]); err != nil {
+					if err := natRule("A", app.Vip.Net.IP, nat_ip, parts[0], parts[1], parts[1]); err != nil {
 						return err
 					}
 				default:
@@ -334,13 +336,18 @@ func (m *MonitorMgr) CloseAll() {
 			close(am.done)
 		}
 		deleteLoopback(am.app.Vip.Net)
+    nat_ip := m.ctrl.localIP;
+    if len(am.app.PrivateIp) > 0 {
+      nat_ip = net.ParseIP(am.app.PrivateIp)
+    }
+
 		for _, nat := range am.app.Nats {
 			parts := strings.Split(nat, ":")
 			switch len(parts) {
 			case 3:
-				natRule("D", am.app.Vip.Net.IP, m.ctrl.localIP, parts[0], parts[1], parts[2])
+				natRule("D", am.app.Vip.Net.IP, nat_ip, parts[0], parts[1], parts[2])
 			case 2:
-				natRule("D", am.app.Vip.Net.IP, m.ctrl.localIP, parts[0], parts[1], parts[1])
+				natRule("D", am.app.Vip.Net.IP, nat_ip, parts[0], parts[1], parts[1])
 			default:
 				continue
 			}
