@@ -76,7 +76,6 @@ func NewController(config c.BgpConfig) (*Controller, error) {
 	}
 	c.s = s
   for _, peer := range config.Peers {
-    fmt.Print("Peer: ", peer)
     p := &api.Peer{
   		Conf: &api.PeerConf{
   			NeighborAddress: peer.PeerIP,
@@ -89,10 +88,8 @@ func NewController(config c.BgpConfig) (*Controller, error) {
     if err := s.AddPeer(context.Background(), &api.AddPeerRequest{Peer: p}); err != nil {
       return nil, fmt.Errorf("Unable to start bgp: %v", err)
     }
-    if peer.PeerAS != config.LocalAS {
-    	c.multiHop = true
-    }
   }
+  c.multiHop = true
 
 	return c, nil
 }
@@ -144,13 +141,12 @@ func (c *Controller) getApiPath(route *Route) *api.Path {
 func (c *Controller) Announce(route *Route) error {
 	var found bool
 	err := c.s.ListPeer(context.Background(), &api.ListPeerRequest{}, func(p *api.Peer) {
-    fmt.Println("Path: ")
+    fmt.Println("Route: ")
     spew.Dump(c.getApiPath(route))
 
 		if p.Conf.NeighborAddress == c.peerIP.String() {
 			found = true
 		}
-    return
 	})
 	if err != nil {
 		return err
