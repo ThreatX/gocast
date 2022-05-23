@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+  "encoding/json"
 
 	"github.com/golang/glog"
 	c "github.com/mayuresh82/gocast/config"
@@ -126,7 +127,8 @@ func (m *MonitorMgr) consulMon() {
 			var toRemove []string
 			m.monMu.Lock()
 			for name, mon := range m.monitors {
-        fmt.Println("Mon: ", mon)
+        jsonF, _ := json.Marshal(mon)
+        fmt.Println("Mon: ", jsonF)
 				if mon.app.Source != "consul" {
 					continue
 				}
