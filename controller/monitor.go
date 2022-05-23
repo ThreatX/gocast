@@ -201,15 +201,20 @@ func (m *MonitorMgr) Remove(appName string) {
 		if err := deleteLoopback(a.app.Vip.Net); err != nil {
 			glog.Errorf("Failed to remove app: %s: %v", a.app.Name, err)
 		}
+    net_ip := m.ctrl.localIP;
+    if len(a.app.PrivateIp) > 0 {
+      net_ip = net.ParseIP(a.app.PrivateIp)
+    }
+
 		for _, nat := range a.app.Nats {
 			parts := strings.Split(nat, ":")
 			switch len(parts) {
 			case 3:
-				if err := natRule("D", a.app.Vip.Net.IP, m.ctrl.localIP, parts[0], parts[1], parts[2]); err != nil {
+				if err := natRule("D", a.app.Vip.Net.IP, net_ip, parts[0], parts[1], parts[2]); err != nil {
 					glog.Errorf("Failed to remove app: %s: %v", a.app.Name, err)
 				}
 			case 2:
-				if err := natRule("D", a.app.Vip.Net.IP, m.ctrl.localIP, parts[0], parts[1], parts[1]); err != nil {
+				if err := natRule("D", a.app.Vip.Net.IP, net_ip, parts[0], parts[1], parts[1]); err != nil {
 					glog.Errorf("Failed to remove app: %s: %v", a.app.Name, err)
 				}
 			default:
