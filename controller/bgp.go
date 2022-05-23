@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+  "github.com/davecgh/go-spew/spew"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	c "github.com/mayuresh82/gocast/config"
@@ -138,21 +139,24 @@ func (c *Controller) getApiPath(route *Route) *api.Path {
 }
 
 func (c *Controller) Announce(route *Route) error {
-	// var found bool
-	// err := c.s.ListPeer(context.Background(), &api.ListPeerRequest{}, func(p *api.Peer) {
-	// 	if p.Conf.NeighborAddress == c.peerIP.String() {
-	// 		found = true
-	// 	}
-	// })
-	// if err != nil {
-	// 	return err
-	// }
-	// if !found {
-	// 	if err := c.AddPeer(c.peerIP.String()); err != nil {
-	// 		return err
-	// 	}
-	// }
-	_, err := c.s.AddPath(context.Background(), &api.AddPathRequest{Path: c.getApiPath(route)})
+	var found bool
+	err := c.s.ListPeer(context.Background(), &api.ListPeerRequest{}, func(p *api.Peer) {
+    fmt.Println("Route: ")
+    spew.Dump(c.getApiPath(route))
+
+		if p.Conf.NeighborAddress == c.peerIP.String() {
+			found = true
+		}
+	})
+	if err != nil {
+		return err
+	}
+	if !found {
+		if err := c.AddPeer(c.peerIP.String()); err != nil {
+			return err
+		}
+	}
+	_, err = c.s.AddPath(context.Background(), &api.AddPathRequest{Path: c.getApiPath(route)})
 	return err
 }
 
