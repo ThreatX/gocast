@@ -143,9 +143,10 @@ func (c *Controller) getApiPath(route *Route) *api.Path {
 
 func (c *Controller) Announce(route *Route) error {
 	var found bool
-  fmt.Println("Route: ")
-  spew.Dump(route)
 	err := c.s.ListPeer(context.Background(), &api.ListPeerRequest{}, func(p *api.Peer) {
+    fmt.Println("Peer: ")
+    spew.Dump(p)
+
 		if p.Conf.NeighborAddress == c.peerIP.String() {
 			found = true
 		}
