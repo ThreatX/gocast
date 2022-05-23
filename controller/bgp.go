@@ -79,10 +79,7 @@ func NewController(config c.BgpConfig) (*Controller, error) {
     p := &api.Peer{
   		Conf: &api.PeerConf{
   			NeighborAddress: peer.PeerIP,
-  			PeerAs:         peer.PeerAS,
-  		},
-  		RouteServer: &api.RouteServer{
-  			RouteServerClient: true,
+  			PeerAs:         uint32(peer.PeerAS),
   		},
   	}
     if err := s.AddPeer(context.Background(), &api.AddPeerRequest{Peer: p}); err != nil {
