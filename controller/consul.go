@@ -41,6 +41,7 @@ type ConsulServiceData struct {
 	Services map[string]struct {
 		ID      string
 		Service string
+    Address string
 		Tags    []string
 	}
 }
@@ -82,7 +83,7 @@ func (c *ConsulMon) queryServices() ([]*App, error) {
 		if !contains(service.Tags, matchTag) {
 			continue
 		}
-    fmt.Println("Service: ")
+    fmt.Println("Service: ", service.Address)
     spew.Dump(service)
 		var (
 			vip      string
