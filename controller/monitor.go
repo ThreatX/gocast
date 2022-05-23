@@ -128,7 +128,7 @@ func (m *MonitorMgr) consulMon() {
 			m.monMu.Lock()
 			for name, mon := range m.monitors {
         jsonF, _ := json.Marshal(mon)
-        fmt.Println("Mon: ", jsonF)
+        fmt.Println("Mon: ", string(jsonF))
 				if mon.app.Source != "consul" {
 					continue
 				}
