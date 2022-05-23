@@ -77,6 +77,7 @@ func (c *ConsulMon) queryServices() ([]*App, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&consulData); err != nil {
 		return apps, fmt.Errorf("Unable to decode consul data: %v", err)
 	}
+  fmt.Println("ConsulData: ", consulData)
 	for _, service := range consulData.Services {
 		if !contains(service.Tags, matchTag) {
 			continue

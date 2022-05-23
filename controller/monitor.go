@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-  "github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 	c "github.com/mayuresh82/gocast/config"
 	api "github.com/osrg/gobgp/api"
@@ -127,8 +126,6 @@ func (m *MonitorMgr) consulMon() {
 			var toRemove []string
 			m.monMu.Lock()
 			for name, mon := range m.monitors {
-        fmt.Println("Mon: ")
-        spew.Dump(mon)
 				if mon.app.Source != "consul" {
 					continue
 				}
