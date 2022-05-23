@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+  "github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 	"github.com/mayuresh82/gocast/config"
 )
@@ -77,8 +78,9 @@ func (c *ConsulMon) queryServices() ([]*App, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&consulData); err != nil {
 		return apps, fmt.Errorf("Unable to decode consul data: %v", err)
 	}
-  fmt.Println("ConsulData: ", consulData)
 	for _, service := range consulData.Services {
+    fmt.Println("ConsulData: ")
+    spew.Dump(consulData)
 		if !contains(service.Tags, matchTag) {
 			continue
 		}
