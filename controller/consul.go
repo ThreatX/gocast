@@ -110,7 +110,7 @@ func (c *ConsulMon) queryServices() ([]*App, error) {
 			continue
 		}
 
-		app, err := NewApp(service.Service, vip, vipConf, monitors, nats, "consul")
+		app, err := NewApp(service.Service, vip, vipConf, monitors, nats, "consul", service.Address)
 		if err != nil {
 			glog.Errorf("Unable to add consul app: %v", err)
 			continue

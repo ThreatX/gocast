@@ -56,6 +56,7 @@ type App struct {
 	VipConfig config.VipConfig
 	Monitors  Monitors
 	Nats      []string
+  PrivateIp string
 	Source    string
 }
 
@@ -72,11 +73,11 @@ func (a *App) Equal(other *App) bool {
 }
 
 func (a *App) String() string {
-	return fmt.Sprintf("Name: %s, Vip: %s, VipConf: %v, Monitors: %v, Nats: %v, Source: %s",
-		a.Name, a.Vip.Net.String(), a.VipConfig, a.Monitors, a.Nats, a.Source)
+	return fmt.Sprintf("Name: %s, Vip: %s, VipConf: %v, Monitors: %v, Nats: %v, Source: %s, PrivateIpL %s",
+		a.Name, a.Vip.Net.String(), a.VipConfig, a.Monitors, a.Nats, a.Source, a.PrivateIp)
 }
 
-func NewApp(appName, vip string, vipConfig config.VipConfig, monitors []string, nats []string, source string) (*App, error) {
+func NewApp(appName, vip string, vipConfig config.VipConfig, monitors []string, nats []string, source string, private_ip string) (*App, error) {
 	if appName == "" {
 		return nil, fmt.Errorf("Invalid app name")
 	}
@@ -87,6 +88,7 @@ func NewApp(appName, vip string, vipConfig config.VipConfig, monitors []string, 
 	}
 	app.Vip = &Route{Net: ipnet, Communities: vipConfig.BgpCommunities}
 	app.VipConfig = vipConfig
+  app.PrivateIp = private_ip
 	for _, m := range monitors {
 		// valid monitor formats:
 		// "port:tcp:123" , "exec:/local/check.sh", "consul"
