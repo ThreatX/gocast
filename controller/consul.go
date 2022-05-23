@@ -83,8 +83,6 @@ func (c *ConsulMon) queryServices() ([]*App, error) {
 		if !contains(service.Tags, matchTag) {
 			continue
 		}
-    fmt.Println("Service: ", service.Address)
-    spew.Dump(service)
 		var (
 			vip      string
 			monitors []string
@@ -112,6 +110,9 @@ func (c *ConsulMon) queryServices() ([]*App, error) {
 			glog.Errorf("No vip Tag found in matched service :%s", service.Service)
 			continue
 		}
+
+	  fmt.Println("ConsulData: ")
+    spew.Dump(nats)
 		app, err := NewApp(service.Service, vip, vipConf, monitors, nats, "consul")
 		if err != nil {
 			glog.Errorf("Unable to add consul app: %v", err)
