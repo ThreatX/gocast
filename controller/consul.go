@@ -79,11 +79,11 @@ func (c *ConsulMon) queryServices() ([]*App, error) {
 		return apps, fmt.Errorf("Unable to decode consul data: %v", err)
 	}
 	for _, service := range consulData.Services {
-    fmt.Println("ConsulData: ")
-    spew.Dump(consulData)
 		if !contains(service.Tags, matchTag) {
 			continue
 		}
+    fmt.Println("Service: ")
+    spew.Dump(service)
 		var (
 			vip      string
 			monitors []string
