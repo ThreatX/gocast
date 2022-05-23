@@ -32,6 +32,15 @@ func NewController(config c.BgpConfig) (*Controller, error) {
 	c := &Controller{}
 	var gw net.IP
 	var err error
+  if config.Peers[0].PeerIP == "" {
+		gw, err := gateway()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get gw ip: %v", err)
+		}
+		c.peerIP = gw
+	} else {
+		c.peerIP = net.ParseIP(config.Peers[0].PeerIP)
+	}
 	if config.LocalIP == "" {
 		gw, err = via(c.peerIP)
 		if err != nil {
